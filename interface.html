@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lung Cancer Prediction</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .container {
+            background: #fff;
+            padding: 20px 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            width: 400px;
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 20px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        button {
+            width: 100%;
+            padding: 10px;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .result {
+            margin-top: 20px;
+            text-align: center;
+            font-size: 18px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Lung Cancer Prediction AI</h1>
+        <div id="form-section">
+            <form id="prediction-form">
+                <div class="form-group">
+                    <label for="age">Age:</label>
+                    <input type="number" id="age" name="age" required>
+                </div>
+                <div class="form-group">
+                    <label for="gender">Gender (1 for Male, 0 for Female):</label>
+                    <input type="number" id="gender" name="gender" required>
+                </div>
+                <div class="form-group">
+                    <label for="smoking">Smoking (1 for Yes, 0 for No):</label>
+                    <input type="number" id="smoking" name="smoking" required>
+                </div>
+                <div class="form-group">
+                    <label for="yellow_fingers">Yellow Fingers (1 for Yes, 0 for No):</label>
+                    <input type="number" id="yellow_fingers" name="yellow_fingers" required>
+                </div>
+                <div class="form-group">
+                    <label for="anxiety">Anxiety (1 for Yes, 0 for No):</label>
+                    <input type="number" id="anxiety" name="anxiety" required>
+                </div>
+                <div class="form-group">
+                    <label for="fatigue">Fatigue (1 for Yes, 0 for No):</label>
+                    <input type="number" id="fatigue" name="fatigue" required>
+                </div>
+                <div class="form-group">
+                    <label for="wheezing">Wheezing (1 for Yes, 0 for No):</label>
+                    <input type="number" id="wheezing" name="wheezing" required>
+                </div>
+                <div class="form-group">
+                    <label for="coughing">Coughing (1 for Yes, 0 for No):</label>
+                    <input type="number" id="coughing" name="coughing" required>
+                </div>
+                <div class="form-group">
+                    <label for="shortness_of_breath">Shortness of Breath (1 for Yes, 0 for No):</label>
+                    <input type="number" id="shortness_of_breath" name="shortness_of_breath" required>
+                </div>
+                <div class="form-group">
+                    <label for="swallowing_difficulty">Swallowing Difficulty (1 for Yes, 0 for No):</label>
+                    <input type="number" id="swallowing_difficulty" name="swallowing_difficulty" required>
+                </div>
+                <div class="form-group">
+                    <label for="chest_pain">Chest Pain (1 for Yes, 0 for No):</label>
+                    <input type="number" id="chest_pain" name="chest_pain" required>
+                </div>
+                <button type="button" onclick="submitForm()">Predict</button>
+            </form>
+        </div>
+        <div id="result-section" class="result"></div>
+    </div>
+
+    <script>
+        async function submitForm() {
+            const features = [
+                parseInt(document.getElementById("age").value),
+                parseInt(document.getElementById("gender").value),
+                parseInt(document.getElementById("smoking").value),
+                parseInt(document.getElementById("yellow_fingers").value),
+                parseInt(document.getElementById("anxiety").value),
+                parseInt(document.getElementById("fatigue").value),
+                parseInt(document.getElementById("wheezing").value),
+                parseInt(document.getElementById("coughing").value),
+                parseInt(document.getElementById("shortness_of_breath").value),
+                parseInt(document.getElementById("swallowing_difficulty").value),
+                parseInt(document.getElementById("chest_pain").value)
+            ];
+
+            try {
+                const response = await fetch("http://127.0.0.1:5000/predict", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({ features })
+                });
+
+                const data = await response.json();
+                if (response.ok) {
+                    document.getElementById("result-section").innerHTML = `<b>Prediction:</b> ${data.prediction}`;
+                } else {
+                    document.getElementById("result-section").innerHTML = `<b>Error:</b> ${data.error}`;
+                }
+            } catch (error) {
+                document.getElementById("result-section").innerHTML = `<b>Error:</b> ${error.message}`;
+            }
+        }
+    </script>
+</body>
+</html>
+

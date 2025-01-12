@@ -2,11 +2,6 @@ from flask import Flask, request, jsonify
 import joblib
 import numpy as np
 
-# Load saved model and other assets
-model = joblib.load('hybrid_model.pkl')  # Replace with your model filename
-scaler = joblib.load('scaler.pkl')       # Replace with your scaler filename
-label_encoder = joblib.load('label_encoder.pkl')  # Replace with your label encoder filename
-
 # Initialize Flask app
 app = Flask(__name__)
 
@@ -17,6 +12,11 @@ def home():
 @app.route('/predict', methods=['POST'])
 def predict():
     try:
+        # Load saved model and other assets
+        model = joblib.load('hybrid_model.pkl')  # Replace with your model filename
+        scaler = joblib.load('scaler.pkl')       # Replace with your scaler filename
+        label_encoder = joblib.load('label_encoder.pkl')  # Replace with your label encoder filename
+        
         # Get JSON data from the POST request
         data = request.get_json()
 
@@ -24,8 +24,20 @@ def predict():
         if 'features' not in data:
             return jsonify({'error': 'Missing "features" in request data'}), 400
 
-        # Extract features and reshape for model
-        features = np.array(data['features']).reshape(1, -1)
+        features = data['features']
+
+        # Validate feature array length
+        if len(features) != 15:  # Assuming 15 features are required
+            return jsonify({'error': f'Expected 15 features, but got {len(features)}'}), 400
+
+        # Ensure all feature values are numeric
+        try:
+            features = [float(f) for f in features]
+        except ValueError:
+            return jsonify({'error': 'All features must be numeric'}), 400
+
+        # Convert to NumPy array and reshape for model
+        features = np.array(features).reshape(1, -1)
 
         # Scale features using the loaded scaler
         scaled_features = scaler.transform(features)
